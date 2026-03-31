@@ -146,3 +146,31 @@ resource "aws_instance" "servidor_web" {
   }  
   
 }
+
+# Creamos el "Almacén" de archivos
+resource "aws_s3_bucket" "datos_empresa" {
+  bucket = "storage-saas-luis-2026" # El nombre debe ser único en TODO el mundo
+  
+  tags = {
+    Name        = "Almacen de Archivos"
+    Environment = "Dev"
+  }
+}
+
+# Candado 1: Bloquear todo acceso público (Seguridad Crítica)
+resource "aws_s3_bucket_public_access_block" "bloqueo_seguro" {
+  bucket = aws_s3_bucket.datos_empresa.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# Candado 2: Activar la "Máquina del Tiempo" (Versionado)
+resource "aws_s3_bucket_versioning" "versionado_luis" {
+  bucket = aws_s3_bucket.datos_empresa.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
