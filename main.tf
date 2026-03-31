@@ -97,3 +97,46 @@ resource "aws_db_instance" "base_de_datos" {
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
 }
+
+# Definimos un Grupo de Seguridad (El Firewall del servidor)
+resource "aws_security_group" "web_sg" {
+  name        = "permitir_web"
+  description = "Permite entrada de trafico HTTP y SSH"
+
+  # Entrada Puerto 80 (Web)
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Cualquiera puede ver la web
+  }
+
+  # Entrada Puerto 22 (SSH - Solo para ti)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # En producción aqui iria solo tu IP por seguridad
+  }
+
+  # Salida total (El servidor puede actualizarse)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Creamos el Servidor (Instancia EC2)
+resource "aws_instance" "servidor_web" {
+  ami           = "ami-0c55b159cbfafe1f0" # ID de Amazon Linux (esto varia por region)
+  instance_type = "t2.micro"             # Capa gratuita
+
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  tags = {
+    Name = "Servidor-SaaS-Luis"
+    Entorno = "Pruebas"
+  }
+}
