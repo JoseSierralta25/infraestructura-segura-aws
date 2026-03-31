@@ -131,7 +131,7 @@ resource "aws_security_group" "web_sg" {
 # Creamos el Servidor (Instancia EC2)
 resource "aws_instance" "servidor_web" {
   ami           = "ami-0c55b159cbfafe1f0" # ID de Amazon Linux (esto varia por region)
-  instance_type = "t2.micro"             # Capa gratuita
+  instance_type = "t2.micro"             
 
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
@@ -139,4 +139,10 @@ resource "aws_instance" "servidor_web" {
     Name = "Servidor-SaaS-Luis"
     Entorno = "Pruebas"
   }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }  
+  
 }
