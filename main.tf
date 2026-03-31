@@ -174,3 +174,15 @@ resource "aws_s3_bucket_versioning" "versionado_luis" {
     status = "Enabled"
   }
 }
+
+# Output para la IP del servidor
+output "ip_publica_servidor" {
+  description = "Direccion IP para conectarse al servidor"
+  value       = aws_instance.servidor_web.public_ip
+}
+
+# Output para el nombre del Bucket
+output "nombre_bucket_s3" {
+  description = "Nombre del bucket creado"
+  value       = aws_s3_bucket.datos_empresa.id
+}
